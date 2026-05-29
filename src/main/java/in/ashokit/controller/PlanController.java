@@ -18,13 +18,36 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import in.ashokit.entity.Plan;
+import in.ashokit.properties.AppProperties;
 import in.ashokit.service.PlanService;
 @RestController
 public class PlanController {
 	
-	@Autowired
+	
 	private PlanService planService;
 	
+	private AppProperties appProps;
+	
+	private Map<String,String>messages;
+	
+	
+	
+	public PlanController(PlanService planService, AppProperties appProps) {
+		
+		this.planService = planService;
+		this.appProps = appProps;
+		this.messages = appProps.getMessages();
+	}
+	
+	
+	
+	
+//	public PlanController(PlanService planService, AppProperties appProps) {
+//		super();
+//		this.planService = planService;
+//		this.appProps = appProps;
+//	}
+
 	@GetMapping("/categories")
 	public ResponseEntity<Map<Integer,String>>planCategories(){
 		
@@ -45,13 +68,18 @@ return new ResponseEntity<>(Categories , HttpStatus.OK);
 boolean isSaved = planService.savePlan(plan);
 		
 //		return new ResponseEntity<>(savePlan , HttpStatus.OK);
+Map<String,String>messages = appProps.getMessages();
 		
 		if(isSaved) {
 			
-			responsemsg = "Plan Saved";
+			
+			responsemsg 	 = messages.get("PlanSaveSucc");
+			
+//			responsemsg = "Plan Saved";
 			
 		}else {
-			responsemsg = "Plan not Saved";
+			responsemsg =  messages.get("PlanSaveFail");
+			
 		}
 		
 		return new ResponseEntity<>(responsemsg,HttpStatus.CREATED);
@@ -82,16 +110,23 @@ boolean isSaved = planService.savePlan(plan);
 		
   boolean isDeleted = planService.deletePlanById(planId);
   
+  Map<String, String>messages= appProps.getMessages();
+
+  
 //  return new  ResponseEntity<Plan>( deletePlanById , HttpStatus.OK);
   
   String msg = "";
   if(isDeleted) {
 	  
-	  msg = "Plan Deleted";
+	  msg = messages.get("planDeleteSucc");
+	  
+//	  msg = "Plan Deleted";
   }
   
   else {
-	  msg = "Plan not deleted";
+//	  msg = "Plan not deleted";
+	  msg = messages.get("planDeleteFail");
+
   }
 	
   return new ResponseEntity<>(msg, HttpStatus.OK);
@@ -112,13 +147,20 @@ boolean isSaved = planService.savePlan(plan);
 	public ResponseEntity<String>updatePlan(@RequestBody Plan plan){
 		        
 		             boolean Isupdated = planService.updatePlan(plan);
+		             Map<String, String>messages= appProps.getMessages();
+		             
+		             
 		             
               String msg = "";
 		             if(Isupdated) {
 		            	 
-		            	msg= "Plan is updated successfully" ;
+		            	 msg = messages.get("planUpdateSucc");
+		            	 
+//		            	msg= "Plan is updated successfully" ;
 		             }else {
-		            	 msg= "Plan is not updated successfully" ;
+//		            	 msg= "Plan is not updated successfully" ;
+		            	 
+		            	 msg = messages.get("PlanUpdatefail");
 		             }
 		             
 		      return new ResponseEntity<>(msg , HttpStatus.OK);
@@ -128,13 +170,17 @@ boolean isSaved = planService.savePlan(plan);
 	@PutMapping("/status-change/{planId}/{status}")
 	public ResponseEntity<String>statusChange( @PathVariable Integer planId , @PathVariable String status){
 		boolean planStatusChange = planService.planStatusChange(planId, status);
-		
+        Map<String, String>messages= appProps.getMessages();
+
 		String msg = "";
 		if(planStatusChange) {
-			msg = "status is changes successfully ";
+//			msg = "status is changes successfully ";
+			msg = messages.get("planStatusChange");
 		}
 		else {
-			msg = "status is not changes sucessfully";
+//			msg = "status is not changes sucessfully";
+			msg = messages.get("planStatusChangefail");
+
 		}
 		
 		return new ResponseEntity<>(msg, HttpStatus.OK);
